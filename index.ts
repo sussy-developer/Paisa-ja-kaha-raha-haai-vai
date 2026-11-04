@@ -1,3 +1,6 @@
+import 'react-native-get-random-values';
+import './config/amplify';
+
 import { registerRootComponent } from 'expo';
 
 import App from './App';

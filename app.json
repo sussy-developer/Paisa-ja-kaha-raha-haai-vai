@@ -24,7 +24,16 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-video",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraProguardRules": "-keep class expo.modules.video.** { *; }\n-keep class androidx.media3.** { *; }"
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {

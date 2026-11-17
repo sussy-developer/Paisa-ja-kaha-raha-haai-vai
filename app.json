@@ -4,7 +4,7 @@
     "slug": "workplace",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/FIcon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
@@ -12,10 +12,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0A0A0C",
+        "foregroundImage": "./assets/FIcon.png",
+        "monochromeImage": "./assets/FIcon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.sussydeveloper.workplace"

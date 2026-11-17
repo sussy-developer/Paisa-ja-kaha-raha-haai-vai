@@ -1,0 +1,45 @@
+type Expense {
+  id: ID!
+  userId: String!
+  title: String!
+  date: String!
+  amount: String!
+  category: String
+  iconBgColor: String
+  createdAt: AWSDateTime
+}
+
+type ExpenseConnection {
+  items: [Expense]
+  nextToken: String
+}
+
+input CreateExpenseInput {
+  id: ID!
+  userId: String!
+  title: String!
+  date: String!
+  amount: String!
+  category: String
+  iconBgColor: String
+  createdAt: AWSDateTime
+}
+
+input DeleteExpenseInput {
+  id: ID!
+}
+
+type Query {
+  listExpensesByUser(userId: String!): ExpenseConnection
+  getExpense(id: ID!): Expense
+}
+
+type Mutation {
+  createExpense(input: CreateExpenseInput!): Expense
+  deleteExpense(input: DeleteExpenseInput!): Expense
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

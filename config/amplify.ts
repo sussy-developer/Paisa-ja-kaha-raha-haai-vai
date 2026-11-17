@@ -19,6 +19,8 @@ try {
     },
   });
 
+  const graphqlEndpoint = process.env.EXPO_PUBLIC_GRAPHQL_ENDPOINT;
+
   Amplify.configure({
     Auth: {
       Cognito: {
@@ -26,6 +28,17 @@ try {
         userPoolClientId: '22f6gmtbdtkfe8jtpefsp0e6s6',
       },
     },
+    ...(graphqlEndpoint
+      ? {
+          API: {
+            GraphQL: {
+              endpoint: graphqlEndpoint,
+              region: 'eu-north-1',
+              defaultAuthMode: 'userPool' as const,
+            },
+          },
+        }
+      : {}),
   });
 } catch (error) {
   console.error('Amplify configuration error:', error);

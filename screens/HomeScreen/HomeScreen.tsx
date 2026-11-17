@@ -9,7 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signOut, fetchUserAttributes } from 'aws-amplify/auth';
+import { signOut, fetchUserAttributes, getCurrentUser } from 'aws-amplify/auth';
+import {
+  syncAndLoadExpenses,
+  persistNewExpense,
+  removeExpense,
+} from '../../services/expenseSyncService';
 import DashboardBackground from './components/DashboardBackground';
 import GreetingHeader from './components/GreetingHeader';
 import TotalExpensesCard from './components/TotalExpensesCard';
@@ -42,6 +47,7 @@ export default function HomeScreen({
   const [activeTab, setActiveTab] = useState<TabKey>('home');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [currentUserId, setCurrentUserId] = useState('');
   const [isAddExpenseVisible, setIsAddExpenseVisible] = useState(false);
 
   // Real data state (starts completely empty, zero dummy data)
@@ -53,7 +59,6 @@ export default function HomeScreen({
 
   useEffect(() => {
     loadUserData();
-    loadExpenses();
   }, []);
 
   const loadUserData = async () => {
@@ -64,39 +69,57 @@ export default function HomeScreen({
         setUserName(savedName);
       }
 
-      // Then fetch from Cognito
-      const attributes = await fetchUserAttributes();
-      if (!savedName && attributes.name) {
-        setUserName(attributes.name);
-      } else if (!savedName && attributes.email) {
-        setUserName(attributes.email.split('@')[0]);
+      // Fetch current authenticated user
+      let uid = '';
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser?.userId) {
+          uid = currentUser.userId;
+          setCurrentUserId(uid);
+        }
+      } catch (authErr) {
+        console.log('User not signed in or offline:', authErr);
       }
-      if (attributes.email) {
-        setUserEmail(attributes.email);
+
+      // Then fetch Cognito attributes
+      try {
+        const attributes = await fetchUserAttributes();
+        if (!savedName && attributes.name) {
+          setUserName(attributes.name);
+        } else if (!savedName && attributes.email) {
+          setUserName(attributes.email.split('@')[0]);
+        }
+        if (attributes.email) {
+          setUserEmail(attributes.email);
+        }
+      } catch (attrErr) {
+        console.log('Unable to load user attributes:', attrErr);
       }
+
+      // Load expenses from local storage and sync with cloud DynamoDB
+      await loadExpenses(uid);
     } catch (error) {
-      console.log('Unable to load user attributes:', error);
+      console.log('Error initializing user data:', error);
+      await loadExpenses('');
     }
   };
 
-  const loadExpenses = async () => {
+  const loadExpenses = async (uid?: string) => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed: Expense[] = JSON.parse(stored);
-        const normalized: Expense[] = parsed.map((item) => ({
-          ...item,
-          amount: item.amount.replace('$', '₹'),
-        }));
-        setExpenses(normalized);
+      const activeUid = uid !== undefined ? uid : currentUserId;
+      const loaded = await syncAndLoadExpenses(activeUid);
+      const normalized: Expense[] = loaded.map((item) => ({
+        ...item,
+        amount: item.amount.replace('$', '₹'),
+      }));
+      setExpenses(normalized);
 
-        const total = normalized.reduce((sum, item) => {
-          const numeric = parseFloat(item.amount.replace(/[^0-9.]/g, '')) || 0;
-          return sum + numeric;
-        }, 0);
+      const total = normalized.reduce((sum, item) => {
+        const numeric = parseFloat(item.amount.replace(/[^0-9.]/g, '')) || 0;
+        return sum + numeric;
+      }, 0);
 
-        setTotalExpensesAmount(`₹${total.toFixed(2)}`);
-      }
+      setTotalExpensesAmount(`₹${total.toFixed(2)}`);
     } catch (error) {
       console.log('Unable to load stored expenses:', error);
     }
@@ -134,15 +157,9 @@ export default function HomeScreen({
       iconBgColor: newExpenseData.category.badgeBgColor,
     };
 
-    const updatedExpenses = [newExpense, ...expenses];
+    // Persist to local AsyncStorage and sync to DynamoDB cloud database
+    const updatedExpenses = await persistNewExpense(newExpense, currentUserId, expenses);
     setExpenses(updatedExpenses);
-
-    // Persist real expenses to storage
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedExpenses));
-    } catch (error) {
-      console.log('Error saving expense:', error);
-    }
 
     // Calculate updated total expenses
     const newTotal = updatedExpenses.reduce((sum, item) => {
@@ -163,14 +180,9 @@ export default function HomeScreen({
   };
 
   const handleDeleteExpense = async (id: string) => {
-    const updatedExpenses = expenses.filter((item) => item.id !== id);
+    // Delete from local storage and sync delete to DynamoDB cloud database
+    const updatedExpenses = await removeExpense(id, expenses);
     setExpenses(updatedExpenses);
-
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedExpenses));
-    } catch (error) {
-      console.log('Error deleting expense:', error);
-    }
 
     const newTotal = updatedExpenses.reduce((sum, item) => {
       const numeric = parseFloat(item.amount.replace(/[^0-9.]/g, '')) || 0;

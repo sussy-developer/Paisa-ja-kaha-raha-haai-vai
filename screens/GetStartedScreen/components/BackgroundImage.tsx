@@ -1,25 +1,18 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { StyleSheet, View, ImageBackground } from 'react-native';
 
 export default function BackgroundImage({ children }: { children?: React.ReactNode }) {
-  const player = useVideoPlayer(require('../../../assets/GetStarted.mp4'), player => {
-    player.loop = true;
-    player.muted = true;
-    player.play();
-  });
-
   return (
     <View style={styles.container}>
-      <VideoView
-        player={player}
+      <ImageBackground
+        source={require('../../../assets/get_started_bg.jpg')}
         style={styles.background}
-        contentFit="cover"
-        nativeControls={false}
-      />
-      <View style={styles.overlay}>
-        {children}
-      </View>
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          {children}
+        </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -29,16 +22,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    backgroundColor: '#000000',
   },
   background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    flex: 1,
     width: '100%',
     height: '100%',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  }
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
 });

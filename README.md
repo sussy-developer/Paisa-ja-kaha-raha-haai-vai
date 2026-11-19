@@ -1,6 +1,6 @@
 # 💸 Paisa Ja Kaha Raha Hai Vai?
 
-### *dekhlo vai paisa kaha ja raha* 👀
+### *dekhlo vai paisa kaha ja raha*
 
 Ever checked your bank balance and wondered...
 

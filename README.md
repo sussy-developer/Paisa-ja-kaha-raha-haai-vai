@@ -1,4 +1,4 @@
-# 💸 Paisa Ja Kaha Raha Hai Vai?
+# Paisa Ja Kaha Raha Hai Vai?
 
 ### *dekhlo vai paisa kaha ja raha*
 
@@ -16,22 +16,22 @@ Well, that's exactly why this project exists.
 
 A modern, dark-themed expense tracking app with a warm orange aesthetic, designed to make managing money a little less boring.
 
-###  Features
+### Features
 
--  **User Authentication** — Sign up and log in using Amazon Cognito.
--  **Email Verification** — Verify your account during registration.
--  **Dashboard** — Your financial overview at a glance.
--  **Add Expense** — Record your daily spending.
--  **Categories** — Organise expenses into categories.
--  **All Expenses** — Keep track of where your money goes.
--  **Analytics** — Understand your spending habits.
--  **Profile** — Your personal account space.
+- **User Authentication** — Sign up and log in using Amazon Cognito.
+- **Email Verification** — Verify your account during registration.
+- **Dashboard** — Your financial overview at a glance.
+- **Add Expense** — Record your daily spending.
+- **Categories** — Organise expenses into categories.
+- **All Expenses** — Keep track of where your money goes.
+- **Analytics** — Understand your spending habits.
+- **Profile** — Your personal account space.
 
->  The application is actively under development. Some screens are currently UI implementations, and backend functionality is being developed.
+> The application is actively under development. Some screens are currently UI implementations, and backend functionality is being developed.
 
 ---
 
-##  Design Philosophy
+## Design Philosophy
 
 - Dark backgrounds with orange gradients.
 - Minimal and modern interface.
@@ -39,11 +39,11 @@ A modern, dark-themed expense tracking app with a warm orange aesthetic, designe
 - Simple navigation.
 - Less financial stress, more financial clarity.
 
-Basically, finance management without looking like an Excel spreadsheet from 2007. 💀
+Basically, finance management without looking like an Excel spreadsheet from 2007.
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |---|---|
@@ -58,7 +58,7 @@ Basically, finance management without looking like an Excel spreadsheet from 200
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```text
 Paisa-ja-kaha-raha-haai-vai/
@@ -80,7 +80,7 @@ Paisa-ja-kaha-raha-haai-vai/
 
 ---
 
-##  Getting Started
+## Getting Started
 
 Want to run this project locally? Let's go!
 
@@ -128,7 +128,7 @@ npx expo run:android
 
 ---
 
-## ☁️ AWS Architecture
+## AWS Architecture
 
 The planned backend architecture:
 
@@ -158,4 +158,4 @@ The idea is simple:
 - Lambda processes expense operations.
 - DynamoDB stores expense records.
 
-Each user's expenses should remain associated with their authenticated
+Each user's expenses should remain associated with their authenticated Cognito user account.
